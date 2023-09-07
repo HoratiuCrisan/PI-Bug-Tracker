@@ -121,6 +121,7 @@ namespace backend.Controllers
 
         [HttpGet]
         [Route("Get-Archived-Projects")]
+        [Authorize (Roles = StaticUserRoles.ADMIN)]
         public async Task<ActionResult<IEnumerable<Project>>>GetArchivedProjects()
         {
             var projects = await _context.Project
@@ -222,7 +223,6 @@ namespace backend.Controllers
             project.Status = "Completed";
             project.FinishDate = DateTime.Now;
 
-            _context.Project.Add(project);
             _context.SaveChanges();
 
             return Ok("Project has been completed");
@@ -239,7 +239,6 @@ namespace backend.Controllers
 
             project.Status = "Archived";
 
-            _context.Project.Add(project);
             _context.SaveChanges();
 
             return Ok("Project has been completed");

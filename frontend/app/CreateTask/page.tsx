@@ -43,7 +43,7 @@ export const CreateTask = ({props}:any) => {
                         "deadLine": new Date(deadline)
                     })
                 })
-                setActiveComponent(null)
+                setActiveComponent("All Projects")
                 return
             } catch(error) {
                 console.error(error)

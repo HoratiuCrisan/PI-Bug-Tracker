@@ -78,13 +78,17 @@ export const ProjectsTable = ({props}:any) => {
     const currentItems = sortedItems.slice(indexOfFirstItem, indexOfLastItem)
 
     const getUsers = async () => {
-        const data : User[] = await fetchUsers()
+        try {
+            const data : User[] = await fetchUsers()
        
-        data.forEach(element => {
-            if (element.email === userData.email)
-                setPids(element.pid.split(','))
-        })
-
+            data.forEach(element => {
+                if (element.email === userData.email)
+                    setPids(element.pid.split(','))
+            })
+        
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     useEffect(() => {
@@ -372,13 +376,14 @@ export const ProjectsTable = ({props}:any) => {
                                 <td className='p-2'>
                                     <div className='flex gap-2 justify-center'>
                                         {
-                                            userData.role == "ADMIN" && (
+                                            ((userData.role === "ADMIN" || userData.email === project.projectManager) ||
+                                            pids.includes(project.title)) &&
                                             <BsPencil 
                                                 size={26}
-                                                onClick={() => setActiveComponent("Edit-Project/" + project.id)} 
-                                                className="text-green-800 font-bold text-lg hover:text-white border-solid border-2 border-green-600 hover:bg-green-600 p-1 cursor-pointer"
+                                                onClick={() => setActiveComponent("Answer-Project/" + project.id)}
+                                                className="text-green-600 font-bold text-lg hover:text-white border-solid border-2 border-green-600 hover:bg-green-600 p-1 cursor-pointer"
                                             />
-                                        )}
+                                        }
                                         {
                                             userData.role === "ADMIN" && (
                                                 <BsTrash
@@ -392,15 +397,6 @@ export const ProjectsTable = ({props}:any) => {
                                                 />
                                             )
                                         }
-                                        {
-                                            pids.includes(project.title) &&
-                                            <BsWrenchAdjustable 
-                                                size={26}
-                                                onClick={() => setActiveComponent("Answer-Project/" + project.id)}
-                                                className="text-gray-600 font-bold text-lg hover:text-white border-solid border-2 border-gray-600 hover:bg-gray-600 p-1 cursor-pointer"
-                                            />
-                                        }
-                                        
                                     </div>
                                 </td>
                             </tr>

@@ -180,12 +180,6 @@ export const TasksTable = ({props} : Props) => {
                     </span>
                 </label>
 
-                <button
-                    onClick={() => {setActiveComponent("Create-Task/" + props)}}
-                    className='rounded-md bg-blue-600 text-white py-1 px-2'
-                >
-                    Add Task
-                </button>
             </div>
         </div>
         <table className="w-full">

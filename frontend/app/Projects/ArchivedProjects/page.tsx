@@ -65,6 +65,7 @@ export const ArchivedProjects = () => {
         setTimeout(() => {
             setLoading(false)
           }, 500)
+        console.log(projects)
     }, [])
 
     const cardDetails = [
@@ -114,7 +115,7 @@ export const ArchivedProjects = () => {
             </div>
 
             {
-                projects?.length === 0 || projects != null ? 
+                projects?.length === 0 || projects == null ? 
                     <div className="min-h-screen flex items-center justify-center bg-gray-100">
                         <div className="p-8 bg-white rounded-lg shadow-lg">
                             <h1 className="text-2xl font-bold mb-4 text-center">There are no projects yet</h1>

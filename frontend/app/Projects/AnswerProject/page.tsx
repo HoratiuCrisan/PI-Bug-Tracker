@@ -5,6 +5,8 @@ import {BsHouseCheck} from 'react-icons/bs'
 import 'react-quill/dist/quill.snow.css'
 import LoadingScreen from '@/app/components/LoadingScreen/page'
 import { TasksTable } from '@/app/components/TasksTable/page';
+import generateUserData from '@/app/components/ProtectedRouter/route'
+import { useAppContext } from '@/app/components/AppContext/page';
 
 interface Params {
     params: string
@@ -37,6 +39,8 @@ interface User {
 
 
 export const AnswerProject = ({params}:Params) => {
+    const {setActiveComponent} = useAppContext()
+    const userData = generateUserData()
     const [loading, setLoading] = useState<boolean>(true)
     const [project, setProject] = useState<Current_Project | null> (null)
     const [description, setDescription] = useState('')
@@ -145,6 +149,34 @@ export const AnswerProject = ({params}:Params) => {
         return formattedDate
     }
 
+    const handleComplete = async () => {
+        try {
+           const response = await fetch("https://localhost:7181/api/Project/Complete-Project/" + project?.project.id, {
+                method: 'PUT',
+                headers: {
+                    "Content-type": "application/json"
+                }
+            })
+            setActiveComponent("All Projects")
+        } catch (error) {   
+            console.error(error)
+        }
+    }
+
+    const handleArchive = async () => {
+        try {
+           const response = await fetch("https://localhost:7181/api/Project/Archive-Project/" + project?.project.id, {
+                method: 'PUT',
+                headers: {
+                    "Content-type": "application/json"
+                }
+            })
+            setActiveComponent("All Projects")
+        } catch (error) {   
+            console.error(error)
+        }
+    }
+
     if (loading)
         return <LoadingScreen />
     
@@ -170,16 +202,31 @@ export const AnswerProject = ({params}:Params) => {
                         >
                         </p>
                         <br />
-
+                        {
+                            (project?.project.status === "Development" && 
+                            (userData.role === 'ADMIN' || userData.email === project.project.projectManager)) &&
+                            <button 
+                                onClick={handleComplete}
+                                className='text-green-600 font-bold border-solid border-2 border-green-600 hover:bg-green-600 hover:text-white px-1 rounded-md'
+                            >
+                                Complete Project
+                            </button>
+                        }
                         {
                             project?.project.status === 'Completed' &&
-                            <button className='text-green-600 font-bold border-solid border-2 border-green-600 hover:bg-green-600 hover:text-white px-1 rounded-md'>
+                            <button
+                                onClick={handleArchive} 
+                                className='text-green-600 font-bold border-solid border-2 border-green-600 hover:bg-green-600 hover:text-white px-1 rounded-md'
+                            >
                                 Archive Project
                             </button>
                         }
                         {
                             project?.project.status === 'Archived' &&
-                            <button className='text-green-600 font-bold border-solid border-2 border-green-600 hover:bg-green-600 hover:text-white px-1 rounded-md'>
+                            <button 
+                                onClick={handleComplete}
+                                className='text-green-600 font-bold border-solid border-2 border-green-600 hover:bg-green-600 hover:text-white px-1 rounded-md'
+                            >
                                 Unlock Project
                             </button>
                         }
@@ -281,6 +328,16 @@ export const AnswerProject = ({params}:Params) => {
                 </div>
 
                 <div className='bg-white h-1/3 w-2/3 rounded-md shadow-md'>
+                {(userData.role === 'ADMIN' || userData.email === project?.project.projectManager) &&
+                    <div className='text-end mr-5 mt-5'> 
+                        <button
+                        onClick={() => {setActiveComponent("Create-Task/" + project?.project.id)}}
+                        className='rounded-md bg-blue-600 text-white p-2'
+                        >
+                            Add Task
+                        </button>
+                    </div>
+                }
                     <h1>
                         <TasksTable props={project?.project.id}/>
                     </h1>
